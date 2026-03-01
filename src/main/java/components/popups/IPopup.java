@@ -1,4 +1,11 @@
 package components.popups;
 
-public interface IPopup {
+public interface IPopup<T> {
+
+    T popupShouldNotBeVisible();
+
+    T popupShouldBeVisible();
+
+    T closePopup();
+
 }
