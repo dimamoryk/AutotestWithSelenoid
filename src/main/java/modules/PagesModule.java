@@ -3,6 +3,7 @@ package modules;
 import com.google.inject.AbstractModule;
 import components.CatalogCoursesComponent;
 import components.popups.AuthPopup;
+import factory.WebDriverFactory;
 import org.openqa.selenium.WebDriver;
 import pages.CategoriesPage;
 import pages.MainPage;
@@ -21,5 +22,6 @@ public class PagesModule extends AbstractModule {
         bind(CategoriesPage.class).toProvider(() -> new CategoriesPage(driver));
         bind(AuthPopup.class).toProvider(() -> new AuthPopup(driver));
         bind(CatalogCoursesComponent.class).toProvider(() -> new CatalogCoursesComponent(driver));
+        bind(WebDriverFactory.class).toInstance(new WebDriverFactory());
     }
 }

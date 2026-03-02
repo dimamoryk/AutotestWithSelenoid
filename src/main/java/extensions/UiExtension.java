@@ -1,7 +1,6 @@
 package extensions;
 
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import exceptions.BrowserNotSupportedException;
 import factory.WebDriverFactory;
 import modules.PagesModule;
@@ -12,14 +11,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.openqa.selenium.WebDriver;
 
 import java.net.MalformedURLException;
-import java.util.NoSuchElementException;
 
 public class UiExtension implements BeforeEachCallback, BeforeAllCallback, AfterEachCallback {
 
     protected WebDriver driver;
 
-    @Inject
-    protected WebDriverFactory webDriverFactory;
+    protected WebDriverFactory webDriverFactory = new WebDriverFactory();
 
     @Override
     public void beforeEach(ExtensionContext context) {
@@ -28,10 +25,15 @@ public class UiExtension implements BeforeEachCallback, BeforeAllCallback, After
         } catch (MalformedURLException | BrowserNotSupportedException ex) {
             Guice.createInjector(new PagesModule(driver))
                     .injectMembers(context
-                            .getTestInstance()
-                            .orElseThrow(() -> new NoSuchElementException("Without WebDriverFactory")));
+                            .getRequiredTestInstances());
+
 
         }
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) {
+        webDriverFactory.init();
     }
 
     @Override
@@ -39,12 +41,6 @@ public class UiExtension implements BeforeEachCallback, BeforeAllCallback, After
         if (driver != null) {
             driver.quit();
         }
-    }
-
-
-    @Override
-    public void beforeAll(ExtensionContext context) {
-        webDriverFactory.init();
     }
 }
 
