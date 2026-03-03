@@ -14,25 +14,22 @@
 
     - name: Clear occupied ports
       block:
-        - name: Find processes occupying ports
-          shell: "ss -tulnp | grep '{{ item }}'"
-          register: proc_result
-          loop:
-            - 4444
-            - 4446
-            - 8080
+        - name: List active ports
+          shell: "ss -tulnp | awk '!/#/{gsub(\"/\",\"\"); print $NF}' | sort -u"
+          register: active_ports
           changed_when: false
 
-        - name: Extract PIDs
-          set_fact:
-            pids_to_kill: proc_result.results | rejectattr('stdout', 'equalto', '') | map(attribute='stdout') | map('regex_replace', '^.*pid=(\d+).*$', '\\1') | list()
-
-        - name: Kill processes occupying ports
-          command: "kill -9 {{ item }}"
+        - name: Find and kill processes occupying ports
+          shell: |
+            for port in {{ active_ports.stdout_lines }}; do
+              pid=$(ss -tulnp | grep ":$port\b" | awk '{gsub(/"/, ""); split($NF, arr, ","); print arr[2]}');
+              if [[ ! -z "$pid" ]]; then
+                echo "Killing process on port $port with PID $pid..."
+                kill -9 $pid || true
+              fi
+            done
           become: true
-          loop: "{{ pids_to_kill }}"
-          when: item is defined
-      become: true
+          changed_when: false
       tags: clear_ports
 
     - name: Render Docker Compose file
@@ -55,6 +52,11 @@
       ignore_errors: true
       when: play_recap is success
       tags: stop_services
+
+    - name: Remove unused Docker images
+      command: docker rmi $(docker images -f "dangling=true" -q)
+      ignore_errors: true
+      tags: cleanup_docker
 
     - name: Build and run tests
       block:

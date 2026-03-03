@@ -1,6 +1,6 @@
 ---
 - name: Setup Selenoid
-  hosts: selenoid
+  hosts: localhost
   become: true
   gather_facts: true
   pre_tasks:
