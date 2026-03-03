@@ -12,37 +12,11 @@
         - docker-ce
       tags: install_prereqs
 
-    - name: Clear occupied ports
-      block:
-        - name: List active ports
-          shell: "ss -tulnp | awk '!/#/{gsub(\"/\",\"\"); print $NF}' | sort -u"
-          register: active_ports
-          changed_when: false
-
-        - name: Find and kill processes occupying ports
-          shell: |
-            for port in {{ active_ports.stdout_lines }}; do
-              pid=$(ss -tulnp | grep ":$port\b" | awk '{gsub(/"/, ""); split($NF, arr, ","); print arr[2]}');
-              if [[ ! -z "$pid" ]]; then
-                echo "Killing process on port $port with PID $pid..."
-                kill -9 $pid || true
-              fi
-            done
-          become: true
-          changed_when: false
-      tags: clear_ports
-
     - name: Render Docker Compose file
       template:
         src: "{{ playbook_dir }}/compose/config/docker-compose.yaml.j2"
         dest: "{{ tests_directory }}/docker-compose.yaml"
       tags: render_config
-
-    - name: Start Docker services
-      command: docker-compose up -d
-      args:
-        chdir: "{{ tests_directory }}"
-      tags: start_services
 
     - name: Stop containers after testing
       command: docker-compose down
@@ -53,10 +27,11 @@
       when: play_recap is success
       tags: stop_services
 
-    - name: Remove unused Docker images
-      command: docker rmi $(docker images -f "dangling=true" -q)
-      ignore_errors: true
-      tags: cleanup_docker
+    - name: Start Docker services
+      command: docker-compose up -d
+      args:
+        chdir: "{{ tests_directory }}"
+      tags: start_services
 
     - name: Build and run tests
       block:
