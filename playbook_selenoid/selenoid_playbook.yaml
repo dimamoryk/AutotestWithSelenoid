@@ -1,0 +1,13 @@
+---
+- name: Setup Selenoid
+  hosts: selenoid
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - include_tasks: pre_tasks.yaml
+  roles:
+    - common
+    - docker
+    - docker_compose
+    - rendering_configs
+    - run_tests
