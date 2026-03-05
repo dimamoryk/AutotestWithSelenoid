@@ -15,13 +15,13 @@
         <target.version>11</target.version>
         <surefire.version>3.5.3</surefire.version>
 
-        <docker.version>3.5.3</docker.version>
-        <jackson.version>2.15.2</jackson.version>
-        <webdrivermanager.version>6.1.0</webdrivermanager.version>
+        <docker.version>3.7.0</docker.version>
+        <jackson.version>2.21.1</jackson.version>
+        <webdrivermanager.version>6.3.3</webdrivermanager.version>
         <guice.version>6.0.0</guice.version>
         <guava.version>33.5.0-jre</guava.version>
         <junit.version>5.13.4</junit.version>
-        <selenium.java.version>4.40.0</selenium.java.version>
+        <selenium.java.version>4.41.0</selenium.java.version>
         <assertj.version>3.27.7</assertj.version>
         <jsoup.version>1.21.1</jsoup.version>
 
@@ -38,7 +38,7 @@
     <dependencies>
         <dependency>
             <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
+            <artifactId>docker-java-core</artifactId>
             <version>${docker.version}</version>
         </dependency>
         <dependency>
@@ -69,6 +69,11 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
+            <version>${selenium.java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
             <version>${selenium.java.version}</version>
         </dependency>
         <dependency>
