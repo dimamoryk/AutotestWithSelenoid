@@ -170,7 +170,7 @@
                 <configuration>
                     <threshold>Low</threshold>
                     <effort>Max</effort>
-                    <includeFilterFile>./spotbugs/include.xml</includeFilterFile>
+                    <includeFilterFile>./linters/spotbugs.xml</includeFilterFile>
                 </configuration>
             </plugin>
         </plugins>
