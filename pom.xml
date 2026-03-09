@@ -135,7 +135,7 @@
                         <localhost>${selenoid.url}</localhost>
                     </systemPropertyVariables>
                     <includes>
-                        <include>HomeworkPageTest</include>
+                        <include>**/*Test.java</include>
                     </includes>
                 </configuration>
             </plugin>
