@@ -12,27 +12,6 @@
         - docker-ce
       tags: install_prereqs
 
-    - name: Render Docker Compose file
-      template:
-        src: "{{ playbook_dir }}/compose/config/docker-compose.yaml.j2"
-        dest: "{{ tests_directory }}/docker-compose.yaml"
-      tags: render_config
-
-    - name: Stop containers after testing
-      command: docker-compose down
-      args:
-        chdir: "{{ tests_directory }}"
-      register: result_stop_containers
-      ignore_errors: true
-      when: play_recap is success
-      tags: stop_services
-
-    - name: Start Docker services
-      command: docker-compose up -d
-      args:
-        chdir: "{{ tests_directory }}"
-      tags: start_services
-
     - name: Build and run tests
       block:
         - name: Clean and verify project
