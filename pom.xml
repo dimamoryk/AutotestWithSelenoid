@@ -135,9 +135,6 @@
                         <browser.type>${browser.type}</browser.type>
                         <localhost>${selenoid.url}</localhost>
                     </systemPropertyVariables>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
                 </configuration>
             </plugin>
 
@@ -146,7 +143,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyleplagin.version}</version>
                 <configuration>
-                    <configLocation>config/linters/google_checks.xml</configLocation>
+                    <configLocation>src/main/resources/google_checks.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                 </configuration>
@@ -171,9 +168,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <threshold>Low</threshold>
-                    <effort>Max</effort>
-                    <includeFilterFile>${basedir}/src/main/config/linters/spotbugs.xml</includeFilterFile>
+                    <includeFilterFile>${basedir}/src/main/resources/spotbugs.xml</includeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

@@ -2,34 +2,34 @@ pipeline {
     agent any
 
     environment {
-        SELENOID_URL = "${params.SELENOID_URL}"
         BROWSER = "${params.BROWSER}"
-        DOCKER_HOST = "unix:///var/run/docker.sock"
+        HEADLESS = "${params.HEADLESS}"
+        SELENOID_URL = "http://selenoid1:4444"
     }
 
     parameters {
         string(name: 'BROWSER', defaultValue: 'chrome', description: 'Браузер: chrome/firefox')
-        string(name: 'BROWSER_VERSION', defaultValue: 'latest', description: 'Версия браузера')
-        string(name: 'SELENOID_URL', defaultValue: 'http://selenoid1:4444', description: 'Selenoid Grid URL')
-        choice(name: 'TESTS_SCOPE', choices: ['all', 'smoke', 'regression'], description: 'Объем тестов')
+        booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Headless режим')
+        string(name: 'THREAD_COUNT', defaultValue: '4', description: 'Количество потоков')
+        choice(name: 'TESTS_SCOPE', choices: ['all', 'critical', 'extended'], description: 'Объем тестов')
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/dimamoryk/AutotestWithSelenoid.git',
+                    url: 'https://github.com/dimamoryk/AutoTestWithSelenide.git',
                     credentialsId: 'github-credentials'
             }
         }
 
-        stage('Run UI Tests') {
+        stage('Run Selenide Tests') {
             steps {
                 sh '''
                     mvn clean test \
-                        -Dselenoid.url=${SELENOID_URL} \
                         -Dbrowser=${BROWSER} \
-                        -Dbrowser.version=${BROWSER_VERSION} \
+                        -Dheadless=${HEADLESS} \
+                        -Dthreads=${THREAD_COUNT} \
                         -Dtest.scope=${TESTS_SCOPE}
                 '''
             }
@@ -40,9 +40,13 @@ pipeline {
                 publishHTML([
                     reportDir: 'target/surefire-reports',
                     reportFiles: '*.html',
-                    reportName: 'UI Test Reports'
+                    reportName: 'Selenide Test Reports'
                 ])
                 junit 'target/surefire-reports/*.xml'
+                allure([
+                    results: [[path: 'target/allure-results']],
+                    report: 'target/allure-report'
+                ])
             }
         }
     }
@@ -52,10 +56,10 @@ pipeline {
             cleanWs()
         }
         failure {
-            echo 'UI tests failed!'
+            echo 'Selenide tests failed!'
         }
         success {
-            echo 'UI tests passed successfully!'
+            echo 'Selenide tests passed successfully!'
         }
     }
 }
