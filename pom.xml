@@ -11,8 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.version>3.14.0</maven.compiler.version>
-        <source.version>11</source.version>
-        <target.version>11</target.version>
+        <source.version>21</source.version>
+        <target.version>21</target.version>
         <surefire.version>3.5.3</surefire.version>
 
         <docker.version>3.7.0</docker.version>
@@ -149,6 +149,7 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -162,10 +163,12 @@
                 <version>${spotbugs.version}</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+
                 </executions>
                 <configuration>
                     <includeFilterFile>${basedir}/src/main/resources/spotbugs.xml</includeFilterFile>
